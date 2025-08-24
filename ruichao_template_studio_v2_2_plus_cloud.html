@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>华西神外 · 梁锐超课题组 — 一键交互指令手册 v2.2</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#0f172a; --card:#0b1220; --text:#e5e7eb;
+    --muted:#94a3b8; --border:#1f2937; --accent:#22c55e; --accent-2:#60a5fa; --chip:#111827;
+  }
+  [data-theme="light"]{
+    --bg:#f5f7fb; --panel:#ffffff; --card:#ffffff; --text:#1f2937;
+    --muted:#6b7280; --border:#e5e7eb; --accent:#059669; --accent-2:#2563eb; --chip:#f3f4f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC","Hiragino Sans GB","Microsoft YaHei"; color:var(--text); background:linear-gradient(180deg, var(--bg), #0a0f1f); line-height:1.55}
+  header{position:sticky; top:0; z-index:10; background:rgba(0,0,0,.1); backdrop-filter: blur(8px); border-bottom:1px solid var(--border)}
+  .row{display:flex; align-items:center; gap:12px}
+  .space-between{justify-content:space-between}
+  .wrap{flex-wrap:wrap}
+  .container{display:flex; min-height:calc(100vh - 70px)}
+  .brand{padding:10px 16px}
+  .brand .lab{font-weight:700}
+  .brand .sub{font-size:12px; color:var(--muted)}
+  .badge{padding:2px 8px; border-radius:999px; border:1px solid var(--border); font-size:12px; color:var(--muted); background:var(--chip)}
+  .btn{padding:8px 12px; border:1px solid var(--border); background:linear-gradient(180deg, var(--card), var(--panel)); border-radius:10px; color:var(--text); cursor:pointer}
+  .btn.primary{background:linear-gradient(180deg, #10b981, #059669); border-color:#047857; color:#fff}
+  .btn.warn{background:linear-gradient(180deg, #f59e0b, #b45309); border-color:#b45309; color:#fff}
+  .btn.ghost{background:transparent}
+  .btn.small{padding:6px 10px; font-size:12px}
+  .btn:disabled{opacity:.6; cursor:not-allowed}
+  .left{width:360px; border-right:1px solid var(--border); background:linear-gradient(180deg, var(--panel), rgba(0,0,0,0))}
+  .left .search{padding:12px 14px}
+  .left input[type="text"]{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--text)}
+  .cats{display:flex; gap:8px; padding:6px 14px; flex-wrap:wrap}
+  .chip{padding:6px 10px; border-radius:999px; background:var(--chip); border:1px solid var(--border); font-size:12px; color:var(--muted); cursor:pointer}
+  .chip.active{outline:2px solid var(--accent); color:var(--text)}
+  .list{padding:8px 10px; height:calc(100vh - 260px); overflow:auto; display:grid; grid-template-columns:1fr; gap:8px}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; cursor:pointer}
+  .card:hover{outline:2px solid var(--accent-2)}
+  .card .small{font-size:12px; color:var(--muted)}
+  .label{display:inline-block; margin-top:6px; font-size:12px; background:var(--chip); border:1px solid var(--border); padding:2px 6px; border-radius:6px}
+  main{flex:1; padding:16px}
+  .panel{background:linear-gradient(180deg, var(--panel), var(--card)); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:12px}
+  .grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px}
+  .grid-3{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px}
+  .kv{display:grid; grid-template-columns:180px 1fr; gap:10px; align-items:center}
+  label{font-size:14px}
+  select, input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea{
+    width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--text)
+  }
+  textarea{min-height:110px}
+  .output{white-space:pre-wrap; background:var(--card); border:1px solid var(--border); padding:14px; border-radius:12px; min-height:220px}
+  .muted{color:var(--muted); font-size:12px}
+  .sticky{position:sticky; bottom:0; background:linear-gradient(180deg, transparent, rgba(0,0,0,0.15)); padding-top:8px}
+  .headerbar{display:flex; align-items:center; justify-content:space-between; padding:10px 16px}
+  .svglogo{display:inline-block; vertical-align:middle}
+  .pill{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); padding:2px 8px; border-radius:999px; font-size:12px; background:var(--card)}
+  .warn{color:#f59e0b}
+  .success{color:#10b981}
+  .actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .hidden{display:none}
+  .print-block{page-break-inside:avoid; margin-bottom:12px}
+  a{color:#60a5fa; text-decoration:none}
+  a:hover{text-decoration:underline}
+  table.preview{width:100%; border-collapse:collapse; font-size:12px}
+  table.preview th, table.preview td{border:1px solid var(--border); padding:6px; vertical-align:top}
+  .filelist{margin-top:6px; font-size:12px}
+  .fileitem{padding:6px; border:1px dashed var(--border); border-radius:8px; margin-bottom:6px}
+
+/* === v2.2+ 附加：书签与云端通道样式 === */
+.bm-panel,.cloud-panel{background:linear-gradient(180deg,var(--panel),var(--card));border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.bm-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.bm-badge{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--border);border-radius:12px;padding:6px 10px;font-size:12px;color:var(--muted)}
+.bookmarklet{display:inline-block;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:linear-gradient(180deg,#0b1220,var(--panel));color:var(--text);cursor:grab;text-decoration:none}
+.bookmarklet:hover{outline:2px solid var(--accent-2)}
+.cloud-actions{display:flex;flex-direction:column;gap:12px}
+.cloud-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:linear-gradient(180deg,var(--card),var(--panel));cursor:pointer}
+.cloud-chip:hover{outline:2px solid var(--accent-2)}
+.cloud-chip img{width:22px;height:22px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60}
+.modal .box{width:min(720px,92vw);max-height:82vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
+.modal .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.small{font-size:12px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center}
+code.small{font-size:12px}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="headerbar">
+    <div class="row wrap">
+      <svg class="svglogo" width="36" height="36" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Huaxi">
+        <circle cx="32" cy="32" r="30" fill="#1d4ed8"></circle>
+        <path d="M18 18 h28 v8 h-10 v20 h-8 V26 H18z" fill="#fff"></path>
+      </svg>
+      <div class="brand">
+        <div class="lab">四川大学华西医院 · 梁锐超课题组</div>
+        <div class="sub">一键交互指令手册 v2.2 · 离线本地 HTML · 支持浅/深色 · 合并 v1.0/v2.0/v2.1 全量卡片</div>
+      </div>
+      <span class="badge">提示：如新窗口未自动带入文本，已为您复制到剪贴板 → 直接粘贴发送</span>
+    </div>
+    <div class="row">
+      <button class="btn small" id="btnTheme">切换浅/深色</button>
+      <button class="btn small" id="btnPrint">PDF 目录预览/打印</button>
+      <button class="btn small" id="btnReset">清空表单</button>
+      <a class="btn small" href="#help">帮助</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <aside class="left">
+    <div class="search">
+      <input id="search" type="text" placeholder="搜索指令（如：SAP、知情同意、课件、文献整理、OSCE、RWE）">
+    </div>
+    <div class="cats" id="cats">
+      <div class="chip active" data-cat="all">全部</div>
+      <div class="chip" data-cat="科研">科研</div>
+      <div class="chip" data-cat="教学">教学</div>
+      <div class="chip" data-cat="临床">临床</div>
+      <div class="chip" data-cat="生活">生活</div>
+    </div>
+    <div id="tplList" class="list"></div>
+  </aside>
+
+  <main>
+    <div id="meta" class="panel">
+      <div class="row space-between">
+        <div>
+          <h2 id="tplTitle" style="margin:6px 0">请选择左侧一个指令</h2>
+          <div class="muted">每个指令均有独立追问清单与专属启动提示；未填信息将在对话中按顺序追问。</div>
+        </div>
+        <div class="actions">
+          <span class="pill">推荐模型：<b id="modelHint">—</b></span>
+          <label class="pill"><input id="chkG0" type="checkbox"> 附加通用元提示 [G0]</label>
+          <label class="pill"><input id="chkTerms" type="checkbox"> 统一术语</label>
+          <label class="pill"><input id="chkQC" type="checkbox"> 质量检查清单</label>
+          <label class="pill">输出语言
+            <select id="langSel">
+              <option value="">不指定</option>
+              <option value="中文">中文</option>
+              <option value="英文">英文</option>
+              <option value="双语">双语</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div id="qaBox" class="muted" style="margin-top:8px"></div>
+    </div>
+
+    
+    <div id="quickTools" class="panel">
+      <div class="row space-between">
+        <b>快速通道（可选）：一键粘贴书签 + 云端选择</b>
+        <span class="muted">说明：书签用于在 ChatGPT 页内自动粘贴提示词；“从云端添加”需在 HTTPS 站点上配置 API 凭据。</span>
+      </div>
+      <div class="grid">
+        <div class="panel">
+          <b>一键粘贴书签（ChatGPT 页内自动粘贴并尝试发送）</b>
+          <div class="actions" style="margin-top:8px">
+            <a id="bookmarkletLink" class="btn small" href="#">拖到书签栏安装</a>
+            <button class="btn small" id="btnCopyBM">复制脚本</button>
+            <button class="btn small" id="btnTestBM">在当前页试粘贴</button>
+          </div>
+          <div class="muted" style="margin-top:6px">
+            用法：先在本页点击「启动（复制 + 新对话）」将提示词复制到剪贴板，再在 ChatGPT 对话页点击该书签，即可自动粘贴（浏览器可能首次弹出授权）。
+          </div>
+        </div>
+        <div class="panel">
+          <b>云端选择通道（Beta）</b>
+          <div class="actions" style="margin-top:8px">
+            <button class="btn small" id="btnGDrive">从 Google Drive 中添加</button>
+            <button class="btn small" id="btnOneDrive">从 OneDrive 中添加</button>
+            <button class="btn small" id="btnCloudCfg">设置 API/权限</button>
+          </div>
+          <div id="cloudHint" class="muted" style="margin-top:6px">
+            当前页面运行于 <code id="protoHint"></code>。建议将本 HTML 放到 HTTPS 站点（如 GitHub Pages）以确保 OAuth 流程稳定。
+          </div>
+          <div id="cloudCfg" class="hidden" style="margin-top:8px">
+            <div class="grid">
+              <div class="panel">
+                <div class="kv"><label>Google API Key</label><input id="gApiKey" type="text" placeholder="AIza..."></div>
+                <div class="kv"><label>Google OAuth Client ID</label><input id="gClientId" type="text" placeholder="xxxx.apps.googleusercontent.com"></div>
+              </div>
+              <div class="panel">
+                <div class="kv"><label>OneDrive Client ID</label><input id="odClientId" type="text" placeholder="Azure AD 应用 ID"></div>
+                <div class="kv"><label>OneDrive Tenant</label><input id="odTenant" type="text" placeholder="common / organizations / consumers"></div>
+              </div>
+            </div>
+            <div class="muted">
+              权限建议：Google <code>https://www.googleapis.com/auth/drive.readonly</code>；OneDrive <code>Files.Read</code>。
+              凭据仅保存在浏览器 <code>localStorage</code>，不会上传。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="uploadPanel" class="panel">
+      <div class="row space-between">
+        <b>资料上传 / 网盘链接（可选）</b>
+        <div class="actions">
+          <span class="muted">说明：本地 HTML 仅在浏览器内读取文件内容，不会上传到任何服务器；网盘链接将作为“引用信息”写入启动提示。</span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="panel">
+          <div class="kv"><label>本地文件（多选）</label><input id="fileLocal" type="file" multiple /></div>
+          <div class="kv"><label>粘贴文本</label><textarea id="pasteArea" placeholder="可粘贴病历、手稿、审稿意见、BibTeX 等（仅用于生成提示预览，实际对话中可继续粘贴完整版）"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="kv"><label>Google Drive 链接（每行一条）</label><textarea id="gdriveLinks" placeholder="https://drive.google.com/..."></textarea></div>
+          <div class="kv"><label>OneDrive 链接（每行一条）</label><textarea id="onedriveLinks" placeholder="https://1drv.ms/... 或 https://sharepoint.com/..."></textarea></div>
+          <div class="kv"><label>其他 URL（每行一条）</label><textarea id="otherLinks" placeholder="论文/数据/图片等公共链接"></textarea></div>
+        </div>
+      </div>
+      <div id="fileList" class="filelist"></div>
+    </div>
+
+    <div id="formBox" class="panel"></div>
+
+    <div id="litTools" class="panel hidden">
+      <div class="row space-between">
+        <b>文献整理 · 模板工具区（R10）</b>
+        <div class="actions">
+          <button class="btn small" id="btnDlXlsx">下载 Excel 模板</button>
+          <button class="btn small" id="btnCopyHeader">复制列头</button>
+          <button class="btn small" id="btnParse">解析预览（粘贴表格）</button>
+        </div>
+      </div>
+      <div class="muted">模板列头：<code id="litCols">编号 | 分类 | 题目 (Title) | 作者 (Authors) | 期刊 (Journal) | 年份 (Year) | 摘要 (Abstract，中文翻译) | 研究类型 | 模型/对象 | 主要发现 | 团队/机构信息</code></div>
+      <div id="litPreview" style="margin-top:8px"></div>
+      <div class="muted">说明：在 Excel 里复制多行直接粘贴到输入框；支持 <code>Tab</code>/<code>,</code>/<code>|</code> 分隔，首行默认为列名。</div>
+    </div>
+
+    <div class="panel">
+      <div class="grid">
+        <div class="panel">
+          <b>专属启动提示预览</b>
+          <div id="output" class="output"></div>
+        </div>
+        <div class="panel">
+          <b>操作</b>
+          <div class="actions" style="margin-top:8px">
+            <button class="btn" id="btnPreview">预览提示词</button>
+            <button class="btn warn" id="btnOpen">直接打开（不复制）</button>
+            <button class="btn primary" id="btnStart">启动（复制 + 新对话）</button>
+          </div>
+          <div class="actions" style="margin-top:8px">
+            <button class="btn small" id="btnCopy">仅复制提示词</button>
+          </div>
+          <div class="muted" style="margin-top:6px">若浏览器阻止弹窗，请允许后再次点击；或手动打开新对话并直接粘贴（已复制）。</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="help" class="panel">
+      <h3>使用说明</h3>
+      <ol>
+        <li>左侧选择一个指令卡片。</li>
+        <li>按需选择该指令的下拉选项，并（可选）在“资料上传/网盘链接”粘贴或选择文件。</li>
+        <li>文献整理（R10）支持：下载 Excel 模板、复制列头、粘贴表格并“解析预览”。</li>
+        <li>点击「预览提示词」检查；点击「启动（复制 + 新对话）」即可开始。</li>
+        <li>如新窗口未带入文本，直接粘贴发送即可。</li>
+      </ol>
+      <p class="muted">本页面完全在本地浏览器运行，不上传数据。可将此页“打印为 PDF”，目录中每条指令均含“专属启动链接”和“提示预览”。</p>
+    </div>
+
+    <div id="printView" class="panel hidden">
+      <h2>指令目录（打印/PDF）</h2>
+      <div id="printList"></div>
+      <div class="muted">提示：导出后，PDF 中的链接将指向本地 HTML（附 <code>?tpl=ID&autobuild=1</code>），用于回到相应指令并自动生成提示。</div>
+    </div>
+
+    <div class="panel">
+      <b>公共维度（全部改为下拉，可选）</b>
+      <div class="grid">
+        <div class="panel">
+          <div class="kv"><label>疾病（多选）</label>
+            <select id="diseases" multiple size="6"></select>
+          </div>
+          <div class="kv"><label>技术（多选）</label>
+            <select id="techs" multiple size="6"></select>
+          </div>
+          <div class="kv"><label>时间范围</label>
+            <select id="timeRange"></select>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="kv"><label>输出格式</label>
+            <select id="fmt"></select>
+          </div>
+          <div class="kv"><label>工作场景</label>
+            <select id="scene"></select>
+          </div>
+          <div class="kv"><label>自定义备注</label>
+            <select id="note"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  
+<!-- === v2.2+ 附加区：一键粘贴书签 & 云端通道 === -->
+<div class="bm-panel" id="bmPanel">
+  <div class="bm-actions">
+    <b>一键粘贴书签</b>
+    <span class="bm-badge">用法：先在本页点击“启动（复制+新对话）”→ 新窗口打开 ChatGPT → 点击下方书签，即可自动粘贴并发送</span>
+  </div>
+  <div class="bm-actions" style="margin-top:6px">
+    <a id="bmLink" class="bookmarklet" title="将此按钮拖到浏览器书签栏，即可在 chatgpt.com 页面一键粘贴发送">📌 将此按钮拖到书签栏：一键粘贴并发送</a>
+    <button class="btn small" id="bmCopy">复制书签代码</button>
+    <span class="small">说明：浏览器跨站安全限制导致本地页无法直接向 ChatGPT 输入框写入文本，书签可在 ChatGPT 页面内以用户点击的方式安全注入文本。</span>
+  </div>
+</div>
+
+<div class="cloud-panel" id="cloudPanel">
+  <div class="bm-actions"><b>资料上传 / 网盘链接（可选）</b>
+    <label class="pill"><input id="chkAttachRefs" type="checkbox"> 在提示中附上引用资料</label>
+  </div>
+  <div class="grid">
+    <div class="panel">
+      <div class="kv"><label>本地文件（多选）</label><input id="localFiles" type="file" multiple></div>
+      <div class="kv"><label>粘贴文本</label><textarea id="pastedText" placeholder="可粘贴病历、手稿、审稿意见、BibTeX 等（仅用于生成预览，实际对话中可继续完整粘贴）"></textarea></div>
+    </div>
+    <div class="panel">
+      <div class="cloud-actions">
+        <div class="cloud-chip" id="btnAddGDrive"><img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="GDrive"> 从 “Google Drive” 中添加</div>
+        <div class="cloud-chip" id="btnAddOneDrive"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Microsoft_Office_OneDrive_%282019%E2%80%93present%29.svg" alt="OneDrive"> 从 “OneDrive” 中添加</div>
+      </div>
+      <div class="kv" style="margin-top:10px"><label>Google Drive 链接（每行一条）</label><textarea id="gdriveLinks" placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=drive_link"></textarea></div>
+      <div class="kv"><label>OneDrive/SharePoint 链接（每行一条）</label><textarea id="onedriveLinks" placeholder="https://1drv.ms/... 或 https://sharepoint.com/..."></textarea></div>
+      <div class="kv"><label>其他 URL（每行一条）</label><textarea id="otherLinks" placeholder="论文/数据/图片等公共链接"></textarea></div>
+      <div class="small">请确保链接的访问权限为 <b>Anyone with the link can view</b>（任何知道链接的人可查看/下载）。<br>Google Drive 建议使用“文件链接”而非“文件夹链接”，必要时可转换为直链：<code class="small">https://drive.google.com/uc?export=download&amp;id=FILE_ID</code>。</div>
+    </div>
+  </div>
+</div>
+
+<!-- GDrive/OneDrive 输入对话框（离线，无需 API Key；仅粘贴链接） -->
+<div class="modal" id="dlgCloud">
+  <div class="box">
+    <div class="row">
+      <b id="dlgTitle">添加链接</b>
+      <button class="btn small" id="dlgClose">关闭</button>
+    </div>
+    <div class="kv"><label>粘贴链接（可多行）</label><textarea id="dlgInput" placeholder="每行一条，回车分隔"></textarea></div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" id="dlgCancel">取消</button>
+      <button class="btn primary" id="dlgOk">确定添加</button>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+/* ----------------- 选项库（统一下拉） ----------------- */
+const OPT = {"diseases": ["胶质瘤", "脑膜瘤", "造釉细胞型颅咽管瘤（ACP）", "乳头状颅咽管瘤（PCP）", "垂体腺瘤", "听神经瘤", "脊索瘤", "动脉瘤/AVM", "脊髓损伤", "帕金森病", "肌张力障碍", "原发性震颤", "神经病理性疼痛", "癫痫", "颅脑损伤"], "techs": ["DBS", "SCS", "显微手术", "伽玛刀", "放疗/放化疗", "fMRI", "DTI", "ASL", "PET", "术中电生理", "脑机接口（BCI）", "放射组学", "机器学习/深度学习", "单细胞转录组", "空间转录组", "蛋白组", "代谢组", "ATAC-seq"], "research_design": ["前瞻性随机对照（RCT）", "前瞻性队列", "回顾性队列", "病例-对照", "交叉试验", "阶梯楔形设计", "真实世界研究（RWE）", "单臂探索"], "centers": ["单中心", "双中心", "多中心（3–5）", "多中心（>5）"], "follow": ["住院期", "30天", "90天", "6月", "12月", "24月", "36月"], "interventions": ["DBS", "SCS", "显微手术", "经蝶入路垂体瘤切除", "颅咽管瘤切除", "放疗/放化疗", "药物治疗", "保守治疗/观察", "康复/理疗"], "controls": ["常规治疗", "安慰对照", "历史对照", "自身前后对照", "无对照"], "outcome_types": ["二分类结局", "计数结局", "连续结局", "时间-事件（生存）", "影像量化指标", "量表评分"], "timepoints": ["基线", "出院", "30天", "90天", "6月", "12月"], "models": ["Logistic 回归", "线性回归", "Cox 比例风险", "混合效应模型", "广义估计方程（GEE）", "倾向评分加权/匹配", "时间序列/纵向模型"], "fdr": ["Benjamini–Hochberg (BH)", "Benjamini–Yekutieli (BY)", "Storey q-value", "Bonferroni", "Holm", "不校正（探索性）"], "platforms": ["bulk RNA-seq", "scRNA-seq", "spatial transcriptomics", "proteomics", "metabolomics", "ATAC-seq", "ChIP-seq"], "grouping": ["两组独立", "三组及以上", "配对/配比", "分层亚组", "纵向重复测量"], "journals": ["Brain", "Journal of Neurosurgery", "Neuro-Oncology", "Nature Medicine", "Lancet Neurology", "JAMA Neurology", "Med"], "audience": ["本科见习", "住院医师规范化培训", "专科医生进修", "研究生/博士后", "跨学科联合授课"], "course_topics": ["颅脑肿瘤学基础", "深部脑刺激（DBS）", "功能神经外科并发症", "放射组学导论", "科研方法与统计"], "surgery_types": ["经蝶入路垂体瘤切除", "经鼻–蝶窦手术", "颅咽管瘤切除", "听神经瘤切除", "颅底肿瘤切除", "动脉瘤夹闭/血管内治疗", "DBS 植入", "SCS 植入"], "risk_items": ["出血", "感染", "脑脊液漏", "神经功能缺损", "内分泌紊乱", "癫痫发作", "深静脉血栓/肺栓塞", "器械相关并发症"], "postop": ["一般病房/重症监护转归", "疼痛与镇静管理", "抗菌药物时机", "抗凝/抗血小板策略", "激素替代与水电解质管理", "影像复查时间点", "出院与复诊安排"], "emr_sources": ["已上传病历文件", "粘贴病历长文本", "结构化病历表格", "仅要点（进入对话追问）"], "output_fmt": ["Markdown", "Word 大纲（标题级）", "表格（CSV）", "JSON", "PPT 大纲", "LaTeX"], "scene": ["基金申请", "伦理递交", "MDT 会", "术前宣教", "门诊宣教", "学术写作/投稿", "课堂教学", "项目管理"], "time_range": ["不限", "最近1年", "最近3年", "最近5年", "2015–2025", "自定义（进入对话追问）"], "notes": ["无", "保留术语双语", "控制字数（≤800字）", "不引用自有未公开数据", "严格匿名化", "按目标期刊格式排版"], "ics_tz": ["Asia/Shanghai", "UTC", "America/New_York", "Europe/London", "Asia/Tokyo"], "task_cats": ["科研", "教学", "门诊", "生活"], "travel_cities": ["成都", "北京", "上海", "广州", "深圳", "杭州", "西安", "重庆", "香港", "台北", "新加坡", "东京", "伦敦", "纽约"]};
+
+/* ----------------- 通用附加块（默认不启用） ----------------- */
+const G0 = `角色：你是熟悉神经外科临床、神经肿瘤与材料学交叉研究、统计方法与学术写作的合作助手。
+读者与语气：面向临床与科研同行，中文为主，专业且正式，必要时给出英文术语对照。
+隐私与合规：若输入含患者信息，先做可逆匿名化（姓名/生日/住院号/电话等置换为占位符）。`;
+
+const TERMS = `术语统一：
+- “adamantinomatous craniopharyngioma, ACP”统一译为“造釉细胞型颅咽管瘤（ACP）”
+- WHO 脑膜瘤分级与常用术语按规范表达
+- 统计与影像名词采用通行缩写（HR、OR、AUC、BIDS、MNI 等）`;
+
+const QC = `质量检查清单：
+- 目标是否明确且可交付？术语是否统一？
+- 关键结论是否给出依据或“占位引用”？
+- 反例思维：若结论不成立，最可能的3个原因？
+- 执行性：是否提供可复制的下一步（代码/表格/流程）？
+- 合规：患者信息是否匿名化？是否触发伦理/数据共享要求？`;
+
+/* ----------------- R10 文献模板：列与内嵌 Excel ----------------- */
+const LIT_COLS = ["编号", "分类", "题目 (Title)", "作者 (Authors)", "期刊 (Journal)", "年份 (Year)", "摘要 (Abstract，中文翻译)", "研究类型", "模型/对象", "主要发现", "团队/机构信息"];
+const XLSX_B64 = "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";
+
+/* ----------------- 模板定义（合并 v1.0/v2.0/v2.1，均用下拉字段） ----------------- */
+/* 为了显著减少重复代码，每个模板提供：id/cat/name/model/fields/qa/spec，build 逻辑用通用函数 genericBuild()。 */
+const TEMPLATES = [
+  /* --- 科研 R 系列 --- */
+  {
+    id:"R1", cat:"科研", name:"选题论证与路线拆解", model:"o3 → GPT‑5 Pro",
+    fields:[
+      {id:"topic_disease", label:"疾病场景", type:"select", multiple:true, options:OPT.diseases},
+      {id:"topic_tech", label:"关键技术", type:"select", multiple:true, options:OPT.techs},
+      {id:"hypo", label:"核心假设类型", type:"select", options:["疗效优越性","非劣性","一致性/重复性验证","机制探索","方法学评估"]},
+      {id:"resource", label:"资源约束", type:"select", multiple:true, options:["样本量有限","随访困难","经费有限","单中心","设备受限","伦理受限"]}
+    ],
+    qa:["主题范围与临床意义","核心假设与可检验性","可行性与资源约束","里程碑与风险点"],
+    spec:`目标：围绕所选疾病/技术，形成“临床/转化/方法学”三套可执行研究路径。
+输出：① 问题—证据缺口—临床意义（≤300字/套）② 设计概览（PICO/人群/结局）③ 样本量所需参数清单与获取路径④ 实施路线图（里程碑/分工/风险/备选方案）。`
+  },
+  {
+    id:"R2", cat:"科研", name:"临床研究方案（Protocol Brief）", model:"GPT‑5 Pro",
+    fields:[
+      {id:"design", label:"研究类型", type:"select", options:OPT.research_design},
+      {id:"interv", label:"干预（多选）", type:"select", multiple:true, options:OPT.interventions},
+      {id:"ctrl", label:"对照", type:"select", options:OPT.controls},
+      {id:"centers", label:"中心数", type:"select", options:OPT.centers},
+      {id:"follow", label:"随访期", type:"select", options:OPT.follow}
+    ],
+    qa:["研究类型与盲法/分配隐藏","主要/次要终点与时间窗","样本量参数与中心数","纳排标准与筛查流程","统计策略（人群/模型/缺失/多重比较）","安全性监测与期中分析阈值"],
+    spec:`输出：PICO 与目标；入排标准；结局与时间窗（表格）；样本量参数清单与公式（占位）；统计计划摘要；数据管理与质控；伦理与安全（不良事件分级与上报、期中分析触发阈值）。`
+  },
+  {
+    id:"R3", cat:"科研", name:"统计分析计划（SAP）核心版", model:"GPT‑5 Pro",
+    fields:[
+      {id:"out_type", label:"主要结局类型", type:"select", options:OPT.outcome_types},
+      {id:"tp", label:"主要评估时间点", type:"select", options:OPT.timepoints},
+      {id:"model", label:"主模型", type:"select", options:OPT.models},
+      {id:"covars", label:"关键协变量（多选）", type:"select", multiple:true, options:["年龄","性别","肿瘤分级","病程","治疗史","KPS/ECOG","是否多灶","病灶体积","中心效应"]},
+      {id:"sens", label:"敏感性分析（多选）", type:"select", multiple:true, options:["不同协变量集","缺失数据法（MI/LOCF）","倾向评分法切换","稳健回归/稳健方差","模型假设检验（PH/线性）"]}
+    ],
+    qa:["分析人群（ITT/PP/安全集）","变量字典/编码/缺失处理","主模型与备选模型（写出公式）","亚组与交互","敏感性分析矩阵","复现脚手架（R/Python 伪代码）"],
+    spec:`输出：人群定义；变量字典；主/备选模型与公式；亚组与交互；敏感性分析矩阵；复现脚手架（数据导入→预处理→模型→诊断→绘图）。`
+  },
+  {
+    id:"R4", cat:"科研", name:"医学影像计算管线（BIDS/配准/分割）", model:"GPT‑5 Pro + GPT‑4o",
+    fields:[
+      {id:"mod", label:"成像模态（多选）", type:"select", multiple:true, options:["T1","T2","FLAIR","DWI","fMRI","DTI","ASL","PET"]},
+      {id:"target", label:"目标结构/通路", type:"select", multiple:true, options:["丘脑核团","皮层/皮层下区","视交叉-垂体","胼胝体","海马","白质束（CST/ATR/SLF）"]},
+      {id:"tool", label:"工具/平台（多选）", type:"select", multiple:true, options:["FSL","AFNI","ANTs","FreeSurfer","SPM","3D Slicer","nnU-Net","MONAI"]}
+    ],
+    qa:["BIDS 组织方案","预处理（畸变校正/标准空间）","分割策略与先验","度量指标与质控阈值","误差来源与校正","最小可行代码与依赖"],
+    spec:`输出：① BIDS 目录② 预处理流程③ 分割策略④ 指标与质控⑤ 误差来源与校正⑥ 最小可行示例代码（命令行/伪代码）。`
+  },
+  {
+    id:"R5", cat:"科研", name:"系统综述/Meta 快读 + 证据整合", model:"o4‑mini → GPT‑5 Pro",
+    fields:[
+      {id:"effect", label:"效应量类型", type:"select", options:["OR","RR","HR","MD","SMD"]},
+      {id:"modelmeta", label:"Meta 模型", type:"select", options:["固定效应","随机效应"]},
+      {id:"bias", label:"偏倚评估工具", type:"select", options:["ROB2","ROBINS‑I","QUADAS‑2","NOS"]}
+    ],
+    qa:["主题范围与关键术语","纳排标准与检索式","终点/效应量类型","异质性评估（I²/τ²）","发表偏倚检测/小样本校正"],
+    spec:`步骤 1：快读矩阵（作者/年/对象/样本量/方法/终点/主要结果/局限）。
+步骤 2：≤800字的证据整合：一致性/异质性来源、研究空白、偏倚与GRADE建议；附 PRISMA 要点与偏倚图建议。`
+  },
+  {
+    id:"R6", cat:"科研", name:"论文 IMRaD 定稿器", model:"GPT‑5 Pro",
+    fields:[
+      {id:"journal", label:"目标期刊", type:"select", options:OPT.journals},
+      {id:"mat_src", label:"材料来源", type:"select", options:["已上传手稿","粘贴要点","仅思维导图/大纲"]}
+    ],
+    qa:["目标期刊与受众","核心结论与证据链","图表与补充材料清单","可复现材料（数据/代码/版本）","伦理与数据共享"],
+    spec:`输出：重写后的 IMRaD；三条主要逻辑风险；Limitations；可复现清单；图题与补充材料编号（交叉引用完整）。材料请见“资料上传/粘贴”。`
+  },
+  {
+    id:"R7", cat:"科研", name:"专利交底书与权利要求草案", model:"GPT‑5 Pro",
+    fields:[
+      {id:"tech_field", label:"技术领域", type:"select", options:["材料学","生物医用材料","神经调控器械","影像AI算法","药物/递送系统","手术器械"]},
+      {id:"scenario", label:"应用场景", type:"select", options:["肿瘤治疗","功能神外","血管病","神经修复","术中导航","影像处理"]},
+      {id:"prior", label:"最接近现有技术", type:"select", options:["已知公开专利","高被引论文","商品化产品","企业白皮书","不确定（进入对话补充）"]}
+    ],
+    qa:["技术问题与现有技术缺陷","核心技术特征与实施例","技术效果与证据","权利要求范围与可专利性风险","规避策略与备选实施方式"],
+    spec:`输出：背景技术/现有技术缺陷/发明内容/实施例/有益效果/权利要求（独权+从权3–5条）/附图说明；并列“可专利性风险点与规避策略”。`
+  },
+  {
+    id:"R8", cat:"科研", name:"审稿意见回复（R2R）", model:"GPT‑5 Pro",
+    fields:[
+      {id:"src", label:"意见来源", type:"select", options:["已上传PDF/Word","粘贴邮件/系统消息","仅编号与要点（进入对话补充）"]},
+      {id:"change", label:"改动摘要", type:"select", options:["已大修（major）","小修（minor）","仅回复不修改","不确定（进入对话补充）"]}
+    ],
+    qa:["逐条对应关系（审稿点→回复）","证据与引用补充","不同意建议时的合理化说明","修改位置标注（节/段/行号）","变更总览表"],
+    spec:`输出：礼貌且基于证据的逐点回复；变更总览表；不同意建议时给出替代实验/分析与理由；标注文内修改位置（节/段/行）。`
+  },
+  {
+    id:"R9", cat:"科研", name:"多组学差异分析（RNA/蛋白/代谢/ATAC/空间）", model:"GPT‑5 Pro",
+    fields:[
+      {id:"platform", label:"平台/数据类型", type:"select", options:OPT.platforms},
+      {id:"grouping", label:"比较设计", type:"select", options:OPT.grouping},
+      {id:"fdr", label:"FDR/多重比较策略", type:"select", options:OPT.fdr}
+    ],
+    qa:["平台与测序/检测方案（批次/质控）","分组与协变量（混杂控制）","预处理与归一化策略","差异模型与统计检验（FDR）","整合分析（富集/通路/网络）","复现管线与可视化"],
+    spec:`输出：① 质控与归一化② 差异分析模型与FDR策略③ 富集/通路/网络④ 多组学整合⑤ 复现脚手架（R/Python）与图形清单。`
+  },
+  {
+    id:"R10", cat:"科研", name:"文献整理与汇总（全文翻译 + 信息提取）", model:"GPT‑5 Pro",
+    fields:[
+      {id:"srcType", label:"输入来源类型", type:"select", options:["标题/DOI/PMID 列表","粘贴表格（按模板列）","粘贴全文（逐篇翻译）","BibTeX/EndNote 引用条目"]},
+      {id:"ops", label:"执行内容", type:"select", multiple:true, options:["信息提取","全文翻译","生成中文摘要"]},
+      {id:"len", label:"翻译粒度/字数", type:"select", options:["段落级直译；摘要 200–300 字；术语双语对照","意译+术语双语","仅摘要翻译（≤300字）"]},
+      {id:"outfmt", label:"输出格式", type:"select", options:OPT.output_fmt}
+    ],
+    qa:["是否含可检索标识（DOI/PMID/URL/BibTeX）","是否提供全文与翻译粒度","输出格式与字段映射","列与模板不一致时的对齐策略","缺失字段处理（留空/占位）"],
+    spec:`模板列：编号 | 分类 | 题目 (Title) | 作者 (Authors) | 期刊 (Journal) | 年份 (Year) | 摘要 (Abstract，中文翻译) | 研究类型 | 模型/对象 | 主要发现 | 团队/机构信息
+任务规范：1) 标题/DOI/PMID 先补全标准引文字段后按模板输出；2) 表格：首行为列名，自动对齐模板列；3) “摘要(中文)”段落直译并保留关键术语双语；4) 输出“处理报告”（条目数/成功/失败/原因）；5) 去重与规则说明。`
+  },
+
+  /* --- 教学 T 系列 --- */
+  {
+    id:"T1", cat:"教学", name:"三学时课件（理论+实践）", model:"o4‑mini → GPT‑5 Pro → GPT‑4o",
+    fields:[
+      {id:"course", label:"课程主题", type:"select", options:OPT.course_topics},
+      {id:"aud", label:"受众层级/先修要求", type:"select", options:OPT.audience}
+    ],
+    qa:["学习目标与可测量动词","时间分配与教学方法","互动设计与案例/习题","作业与评分Rubric","参考资料与配图建议"],
+    spec:`输出：1) 学习目标（3–5条、可测量）2) 三学时拆解与时间分配 3) 幻灯逐页要点（含讲者备注）4) 互动设计 5) 作业与评分Rubric 6) 参考资料。`
+  },
+  {
+    id:"T2", cat:"教学", name:"试题蓝图与题库（MCQ/病例）", model:"GPT‑5 Pro + o4‑mini",
+    fields:[
+      {id:"goal_level", label:"认知层级框架", type:"select", options:["记忆/理解","应用/分析","评价/创造"]},
+      {id:"dist", label:"题量与难度比例", type:"select", options:["单选30（易/中/难=5/20/5）","单选50（10/35/5）","混合题型（客观/主观）"]}
+    ],
+    qa:["胜任力目标与认知层级","题型结构与覆盖度","干扰项质量与理由标注","答案一致性与评分锚点","信度/效度与复核流程"],
+    spec:`输出：① 蓝图表（目标×题型×认知层级×权重）② MCQ 题干+≥4干扰项（标注干扰理由）③ 标准答案与解析 ④ 信度与覆盖度自检清单。`
+  },
+  {
+    id:"T3", cat:"教学", name:"OSCE 站点脚本（SP+评分表）", model:"GPT‑5 Pro",
+    fields:[
+      {id:"skill", label:"技能主题", type:"select", options:["术前沟通","术后随访沟通","神经系统查体","缝合打结","术后并发症评估"]},
+      {id:"dur", label:"站点时长", type:"select", options:["8分钟","10分钟","15分钟"]}
+    ],
+    qa:["场景与道具","SP 台词与互动节奏","评分清单（核对点+权重）","全局评分锚点","常见失误与扣分标准"],
+    spec:`输出：场景与道具、SP 台词、考官评分清单、全局评分锚点、常见失误与扣分标准。`
+  },
+  {
+    id:"T4", cat:"教学", name:"图像读片互动课", model:"GPT‑4o",
+    fields:[
+      {id:"imgtype", label:"影像类型", type:"select", options:["MRI","CT","血管造影","PET/CT","图表/统计图"]},
+      {id:"duration", label:"授课时长", type:"select", options:["15分钟","30分钟","45分钟"]}
+    ],
+    qa:["关键结构与异常征象","差异诊断要点","互动提问设计","讲解提纲"],
+    spec:`输出：教学口吻逐图标注要点；生成适配授课时长的讲解提纲与提问清单。`
+  },
+  {
+    id:"T5", cat:"教学", name:"教案 + 教学反思一页版", model:"o4‑mini",
+    fields:[
+      {id:"course2", label:"课程主题", type:"select", options:OPT.course_topics},
+      {id:"focus", label:"课堂关注点", type:"select", multiple:true, options:["目标达成","学习者参与度","时间管理","案例难度","互动质量"]}
+    ],
+    qa:["教案要点（目标/内容/方法/评价）","反思（有效/待改进/行动项）","A4 一页内的信息压缩"],
+    spec:`输出：“一页式教案+课后反思”：教案要点与反思结论（行动项3条内）。`
+  },
+
+  /* --- 临床 C 系列 --- */
+  {
+    id:"C1", cat:"临床", name:"术前知情同意 + 宣教包（ACP示例）", model:"GPT‑5 Pro + GPT‑4o",
+    fields:[
+      {id:"surgery", label:"手术方式", type:"select", options:OPT.surgery_types},
+      {id:"risks", label:"关键风险（多选）", type:"select", multiple:true, options:OPT.risk_items},
+      {id:"postop", label:"术后管理要点（多选）", type:"select", multiple:true, options:OPT.postop}
+    ],
+    qa:["诊断与治疗目的（术语统一）","关键风险与发生机制/分级","术后并发症监测与阈值","替代治疗与不治疗后果","家属常见问答与签署要点"],
+    spec:`输出：专业版+通俗版材料：诊断与目的、手术步骤与关键风险（机制+分级）、并发症监测与处理、替代方案与不治疗后果、常见问答、签署要点摘要。`
+  },
+  {
+    id:"C2", cat:"临床", name:"病历结构化 + MDT 要点", model:"o4‑mini → GPT‑5 Pro",
+    fields:[
+      {id:"emr_src", label:"资料来源", type:"select", options:OPT.emr_sources},
+      {id:"mdt_focus", label:"MDT 关注点", type:"select", multiple:true, options:["诊疗路径选择","围术期并发症风险","影像判读争议","病理/分子分型","随访/复发管理"]}
+    ],
+    qa:["主诉/现病史/既往史/查体/检查","评估-计划（A/P）与鉴别","MDT 要点与待补资料"],
+    spec:`输出：结构化病历（主诉/现病史/既往史/查体/检查/评估与计划）+ MDT 讨论要点（3–5条）+ 待补资料。`
+  },
+  {
+    id:"C3", cat:"临床", name:"影像要点解读与鉴别", model:"GPT‑4o",
+    fields:[
+      {id:"img_src", label:"资料来源", type:"select", options:["已上传影像截图","关键文字描述","仅部位与症状线索"]},
+      {id:"site", label:"解剖部位", type:"select", options:["额叶","颞叶","顶叶","枕叶","小脑","脑干","鞍区/鞍上区","后颅窝","侧脑室区"]}
+    ],
+    qa:["部位与边界特征","信号与强化模式","特异征象","Top-3 鉴别诊断","下一步检查建议"],
+    spec:`输出：部位/边界/信号/强化/特异征象/Top-3 鉴别/下一步检查建议。`
+  },
+  {
+    id:"C4", cat:"临床", name:"随访方案与量表套餐", model:"o4‑mini",
+    fields:[
+      {id:"disease2", label:"疾病与术式/治疗", type:"select", options:["垂体腺瘤（经蝶）","颅咽管瘤（切除）","胶质瘤（手术+放化疗）","DBS（帕金森病）","听神经瘤（保听/切除）"]},
+      {id:"schedule", label:"随访时间轴", type:"select", options:["2周/1月/3月/6月/12月","出院后1周、1月、3月","个性化（进入对话细化）"]}
+    ],
+    qa:["来院/远程安排","量表组合（名称/用途/时长）","红黄绿阈值与触发条件","随访问答脚本"],
+    spec:`输出：分时点随访方案：来院/远程安排、量表组合、阈值与触发条件、随访问答脚本。`
+  },
+  {
+    id:"C5", cat:"临床", name:"出院小结 + 患者友好版要点", model:"o4‑mini → GPT‑5 Pro",
+    fields:[
+      {id:"stay_src", label:"资料来源", type:"select", options:["已上传出院记录","粘贴病程与医嘱要点","仅诊断/手术/并发症清单"]}
+    ],
+    qa:["诊断/过程/手术/并发症","出院指征/复诊时间/危险信号","患者友好版语言转换（≤200字）"],
+    spec:`输出：标准化出院小结 + 患者友好版要点卡片（≤200字）。`
+  },
+  {
+    id:"C6", cat:"临床", name:"MDT 讨论一页提案", model:"GPT‑5 Pro",
+    fields:[
+      {id:"case_src", label:"资料来源", type:"select", options:["已上传摘要","粘贴摘要","仅要点（进入对话补充）"]},
+      {id:"issues", label:"主要争议（多选）", type:"select", multiple:true, options:["影像与病理不一致","是否手术/术式选择","术后放化疗时机","随访 vs 立即干预","多学科意见分歧"]}
+    ],
+    qa:["关键信息表","治疗路径图","争议点与证据摘要","建议与执行人"],
+    spec:`输出：“一页式 MDT 提案”：关键信息表、治疗路径图、争议点与证据摘要、建议与执行人。`
+  },
+  {
+    id:"C7", cat:"临床", name:"围术期质控巡检清单", model:"o4‑mini",
+    fields:[
+      {id:"proc", label:"术式类型", type:"select", options:OPT.surgery_types}
+    ],
+    qa:["术前检查与用药","术中流程与关键节点","术后监测与用药","高风险触发项"],
+    spec:`输出：术前/术中/术后分层质控表（必要化验/影像/用药/抗凝/抗菌药时机/文书节点），标注“高风险触发项”。`
+  },
+  {
+    id:"C8", cat:"临床", name:"临床研究入排标准与筛查表", model:"GPT‑5 Pro",
+    fields:[
+      {id:"pop", label:"目标人群（多选）", type:"select", multiple:true, options:["成人","老年","儿童","术后患者","既往放疗史","复发/进展"]},
+      {id:"excl", label:"排他因素（多选）", type:"select", multiple:true, options:["合并严重内科疾病","妊娠/哺乳","依从性差","近期参加其他试验","禁忌证"]}
+    ],
+    qa:["入组条件（操作化定义）","排除标准（可量化）","筛查流程与记录表模板","模糊情形判定规则"],
+    spec:`输出：入排标准（操作化定义）、筛查流程与记录表模板、模糊情形判定规则。`
+  },
+
+  /* --- 生活 P 系列 --- */
+  {
+    id:"P1", cat:"生活", name:"我的 AI 日历（解析 + .ics 指南）", model:"o4‑mini → GPT‑5 Pro",
+    fields:[
+      {id:"tz", label:"时区", type:"select", options:OPT.ics_tz},
+      {id:"cats", label:"任务分类（多选）", type:"select", multiple:true, options:OPT.task_cats}
+    ],
+    qa:["日期/时间/地点解析与分类","冲突检测与去冲突建议","ICS 字段与导入说明","颜色/标签方案"],
+    spec:`输出：① 结构化表 ② 冲突列表与去冲突建议 ③ .ics 生成规则或文本（UID/DTSTAMP/DTSTART/DTEND/TZID） ④ 导入说明与校验要点。自然语言任务请在“粘贴文本”输入。`
+  },
+  {
+    id:"P2", cat:"生活", name:"旅行/会议行程助手", model:"o4‑mini",
+    fields:[
+      {id:"city", label:"城市", type:"select", options:OPT.travel_cities},
+      {id:"date_span", label:"日期范围", type:"select", options:["本周","下周","未来30天","自定义（对话细化）"]},
+      {id:"prefs", label:"偏好与约束", type:"select", multiple:true, options:["地铁优先","步行优先","素食","清真","节省预算","靠近会场","自由活动留白"]}
+    ],
+    qa:["会议/参观点/用餐/交通安排","备选方案B","天气/交通应急清单占位"],
+    spec:`输出：逐日行程表（含交通/用餐/备选方案B）+ 应急清单占位。`
+  },
+  {
+    id:"P3", cat:"生活", name:"周计划 + 回顾", model:"o4‑mini",
+    fields:[
+      {id:"quad", label:"四象限权重", type:"select", options:["重要紧急优先","重要不紧急优先","时间块优先","平衡分配"]},
+      {id:"focus3", label:"每日三件最重要的事", type:"select", options:["科研优先","临床优先","教学优先","家庭优先","混合"]}
+    ],
+    qa:["四象限任务表","每日三件最重要的事","可执行检查点","周末回顾问卷"],
+    spec:`输出：四象限任务表、每日三件最重要的事、可执行检查点、周末回顾问卷（做得好/未完成/下一步）。`
+  },
+  {
+    id:"P4", cat:"生活", name:"会议纪要与行动项追踪", model:"o4‑mini",
+    fields:[
+      {id:"minutes_src", label:"资料来源", type:"select", options:["已上传录音转写/纪要","粘贴要点","仅行动项粗清单"]}
+    ],
+    qa:["决议/分工/截止日期","RACI 表","风险与依赖项","下次议程草案"],
+    spec:`输出：会议纪要（决议/分工/截止日期）、RACI 表、风险与依赖项、下次议程草案。`
+  },
+  {
+    id:"P5", cat:"生活", name:"期刊名称标准化与导出", model:"o4‑mini",
+    fields:[
+      {id:"fmt2", label:"导出格式", type:"select", options:["CSV","TSV","Markdown 表"]},
+      {id:"dedup", label:"去重策略", type:"select", options:["严格（大小写/空格统一）","宽松（模糊匹配）"]}
+    ],
+    qa:["规范化规则","冲突对照表","导出格式"],
+    spec:`输出：统一为《期刊名 [journal]》格式；如提供列结构，返回可粘贴的 CSV/TSV；必要时给出模糊匹配与冲突对照表。期刊清单请在“粘贴文本”输入。`
+  }
+];
+
+/* ----------------- 运行时状态 ----------------- */
+const $ = sel=>document.querySelector(sel);
+const $$ = sel=>document.querySelectorAll(sel);
+let currentId = null;
+const tplList = $("#tplList");
+const formBox = $("#formBox");
+const qaBox = $("#qaBox");
+const modelHint = $("#modelHint");
+const output = $("#output");
+const langSel = $("#langSel");
+const litTools = $("#litTools");
+
+/* ----------------- 初始化公共下拉 ----------------- */
+function fillSelectOptions(sel, arr){ sel.innerHTML = arr.map(v=>`<option value="${v}">${v}</option>`).join(""); }
+fillSelectOptions($("#diseases"), OPT.diseases);
+fillSelectOptions($("#techs"), OPT.techs);
+fillSelectOptions($("#timeRange"), OPT.time_range);
+fillSelectOptions($("#fmt"), OPT.output_fmt);
+fillSelectOptions($("#scene"), OPT.scene);
+fillSelectOptions($("#note"), OPT.notes);
+
+/* ----------------- 文献模板工具：下载、复制列头、预览解析 ----------------- */
+function b64toBlob(b64, mime){ const byteChars = atob(b64); const byteNums = new Array(byteChars.length); for (let i=0;i<byteChars.length;i++) byteNums[i]=byteChars.charCodeAt(i); const byteArray = new Uint8Array(byteNums); return new Blob([byteArray], {type:mime}); }
+$("#btnDlXlsx").onclick = ()=>{ const blob = b64toBlob(XLSX_B64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href=url; a.download="文献整理模板.xlsx"; a.click(); URL.revokeObjectURL(url); };
+$("#btnCopyHeader").onclick = async ()=>{ const header = LIT_COLS.join("\t"); try{ await navigator.clipboard.writeText(header); }catch(e){ const ta=document.createElement("textarea"); ta.value=header; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); } alert("已复制模板列头（制表符分隔）。在 Excel 中粘贴到首行即可。"); };
+function parseTable(text){ if(!text) return null; const lines = text.split(/\n+/).map(s=>s.trim()).filter(Boolean); if(!lines.length) return null; let delim="\t"; if(lines[0].includes("|")) delim="|"; else if(lines[0].includes(",")) delim=","; const rows = lines.map(ln=>ln.split(delim).map(x=>x.trim())); let header=rows[0]; let data=rows.slice(1); return {header,data}; }
+function renderPreview(){ const tf = $("#pasteArea"); const box = $("#litPreview"); box.innerHTML=""; const parsed = parseTable(tf.value); if(!parsed){ box.innerHTML='<div class="muted">（无可预览的表格数据）</div>'; return; } const table = document.createElement("table"); table.className="preview"; const thead = document.createElement("thead"); const hr = document.createElement("tr"); parsed.header.forEach(h=>{ const th=document.createElement("th"); th.textContent=h; hr.appendChild(th); }); thead.appendChild(hr); table.appendChild(thead); const tbody=document.createElement("tbody"); parsed.data.slice(0,5).forEach(r=>{ const tr=document.createElement("tr"); parsed.header.forEach((h,i)=>{ const td=document.createElement("td"); td.textContent=(r[i]||""); tr.appendChild(td); }); tbody.appendChild(tr); }); table.appendChild(tbody); const mapNote=document.createElement("div"); mapNote.className="muted"; mapNote.style.marginTop="6px"; mapNote.textContent="预览前 5 行。模型将按模板列顺序输出；若列名不同，将在对话中自动对齐到模板列。"; box.appendChild(table); box.appendChild(mapNote); }
+$("#btnParse").onclick = renderPreview;
+
+/* ----------------- 文件读取与预览（不上传） ----------------- */
+const fileListBox = $("#fileList");
+$("#fileLocal").addEventListener("change", (e)=>{
+  const files = Array.from(e.target.files||[]);
+  fileListBox.innerHTML = "";
+  if(!files.length){ fileListBox.innerHTML = '<div class="muted">（未选择本地文件）</div>'; return; }
+  files.forEach(f=>{
+    const div = document.createElement("div"); div.className="fileitem";
+    div.innerHTML = `<b>${f.name}</b> <span class="muted">(${(f.size/1024).toFixed(1)} KB, ${f.type||"unknown"})</span><div class="muted">预览：</div><pre class="output" style="min-height:0;max-height:120px;overflow:auto"></pre>`;
+    const pre = div.querySelector("pre");
+    const reader = new FileReader();
+    reader.onload = ()=>{ 
+      let txt = reader.result;
+      if(typeof txt!=="string"){ pre.textContent = "(二进制文件，略过预览)"; }
+      else{ pre.textContent = (txt.slice(0,2000) + (txt.length>2000?"\n……（仅预览前 2KB）":"")); }
+    };
+    try{ reader.readAsText(f); }catch(err){ pre.textContent = "(预览失败)"; }
+    fileListBox.appendChild(div);
+  });
+});
+
+/* ----------------- 工具函数 ----------------- */
+function getSelectedValues(selectEl){ return Array.from(selectEl.selectedOptions).map(o=>o.value).join("、"); }
+function commonDims(){
+  const diseases = getSelectedValues($("#diseases"));
+  const techs = getSelectedValues($("#techs"));
+  const timeRange = $("#timeRange").value;
+  const fmt = $("#fmt").value;
+  const scene = $("#scene").value;
+  const note = $("#note").value;
+  const qaOrder = (getCurrentTpl()?.qa||[]).map((q,i)=>`${i+1}) ${q}`).join(" → ");
+  let appendParts = [];
+  if($("#chkG0").checked) appendParts.push(G0);
+  if($("#chkTerms").checked) appendParts.push(TERMS);
+  if($("#chkQC").checked) appendParts.push(QC);
+  const lang = langSel.value.trim();
+  const fileNames = Array.from($("#fileLocal").files||[]).map(f=>`${f.name} (${(f.size/1024).toFixed(0)}KB)`);
+  const pasted = ($("#pasteArea").value||"").trim();
+  const gdrive = ($("#gdriveLinks").value||"").trim().split(/\n+/).filter(Boolean);
+  const onedrive = ($("#onedriveLinks").value||"").trim().split(/\n+/).filter(Boolean);
+  const other = ($("#otherLinks").value||"").trim().split(/\n+/).filter(Boolean);
+  return { diseases, techs, timeRange, fmt, scene, note, qaOrder,
+           append: appendParts.length? "\n——\n"+appendParts.join("\n——\n") : "", lang,
+           files:fileNames, pasted: pasted? pasted.slice(0,800):"", links:[...gdrive,...onedrive,...other] };
+}
+function getCurrentTpl(){ return TEMPLATES.find(t=>t.id===currentId)||null; }
+function setOutput(text){ output.textContent = text||""; }
+
+/* ----------------- 通用构建器 ----------------- */
+function genericBuild(tpl, v, common){
+  const selectDump = (tpl.fields||[]).map(f=>`- ${f.label}：${v[f.id]||"（未选择）"}`).join("\n");
+  const fileDump = common.files && common.files.length ? common.files.map((x,i)=>`${i+1}) ${x}`).join("\n") : "（未选择）";
+  const linkDump = common.links && common.links.length ? common.links.map((x,i)=>`${i+1}) ${x}`).join("\n") : "（无）";
+  const pasted = common.pasted ? (common.pasted + (common.pasted.length>=800?"\n……（仅截取前 800 字预览）":"")) : "（无）";
+  return [
+`你将作为“${tpl.name}”的专属助手。若信息不足，请严格按顺序追问：${common.qaOrder}。`,
+common.lang?`【输出语言】${common.lang}。`:"",
+`【指令已选参数】
+${selectDump}`,
+`【公共维度】疾病=${common.diseases||"—"}；技术=${common.techs||"—"}；时间范围=${common.timeRange||"—"}；输出格式=${common.fmt||"—"}；工作场景=${common.scene||"—"}；备注=${common.note||"—"}`,
+`【资料引用（仅用于理解，不含真实附件）】
+- 本地文件：
+${fileDump}
+- 网盘/URL：
+${linkDump}
+- 粘贴文本（片段）：
+${pasted}`,
+`【任务规范/产出结构】
+${tpl.spec}`,
+common.append
+  ].filter(Boolean).join("\n");
+}
+
+/* 为每个模板绑定通用 build */
+TEMPLATES.forEach(t=>{ t.build = (v,c)=>genericBuild(t,v,c); });
+
+/* ----------------- 渲染左侧列表与筛选 ----------------- */
+function renderList(){
+  const q = ($("#search").value||"").toLowerCase();
+  const cat = $(".chip.active").dataset.cat;
+  tplList.innerHTML = "";
+  TEMPLATES.filter(t=>cat==="all"||t.cat===cat).filter(t=>!q || t.id.toLowerCase().includes(q) || t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q)).forEach(t=>{
+    const card = document.createElement("div"); card.className="card";
+    card.innerHTML = `<div><b>${t.id}</b> · ${t.name}</div><div class="small">${t.cat}</div><div class="label">推荐模型：${t.model}</div>`;
+    card.onclick = ()=>selectTpl(t.id);
+    tplList.appendChild(card);
+  });
+}
+$("#search").oninput = renderList;
+$$(".chip").forEach(ch=>{
+  ch.onclick = ()=>{
+    $$(".chip").forEach(c=>c.classList.remove("active"));
+    ch.classList.add("active");
+    renderList();
+  };
+});
+renderList();
+
+/* ----------------- 选择模板 → 渲染表单 ----------------- */
+function selectTpl(id){
+  const tpl = TEMPLATES.find(t=>t.id===id); if(!tpl) return;
+  currentId = id;
+  $("#tplTitle").textContent = `${tpl.id} · ${tpl.name}`;
+  modelHint.textContent = tpl.model;
+  qaBox.innerHTML = `<b>专属追问顺序：</b> ${tpl.qa.map((q,i)=>`<span class="label">${i+1}. ${q}</span>`).join(" ")}`;
+  litTools.classList.toggle("hidden", id!=="R10");
+  // build form
+  formBox.innerHTML = "";
+  const form = document.createElement("div"); form.className = "grid";
+  tpl.fields.forEach(f=>{
+    const wrap = document.createElement("div"); wrap.className="panel";
+    let ctrl = "";
+    if(f.type==="select"){
+      const multiple = f.multiple ? " multiple size='6' " : "";
+      ctrl = `<select id="f_${f.id}" ${multiple}>${(f.options||[]).map(v=>`<option value="${v}">${v||"（未选择）"}</option>`).join("")}</select>`;
+    } else {
+      ctrl = `<select id="f_${f.id}"><option value="">（未选择）</option></select>`;
+    }
+    wrap.innerHTML = `<div class="kv"><label for="f_${f.id}">${f.label}</label>${ctrl}</div>`;
+    form.appendChild(wrap);
+  });
+  formBox.appendChild(form);
+  setOutput("");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ----------------- 构建提示词（专属） ----------------- */
+function buildPrompt(){
+  const tpl = getCurrentTpl(); if(!tpl){ alert("请先选择左侧一个指令"); return ""; }
+  const v = {};
+  tpl.fields.forEach(f=>{
+    const el = document.getElementById("f_"+f.id); 
+    if(!el) v[f.id] = ""; 
+    else if(el.multiple) v[f.id] = Array.from(el.selectedOptions).map(o=>o.value).join("、");
+    else v[f.id] = el.value||"";
+  });
+  const c = commonDims();
+  return tpl.build(v, c);
+}
+
+/* ----------------- 复制 + 打开新对话（稳健） ----------------- */
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    const ta = document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); return true;
+  }
+}
+function openChat(withTplId){
+  const urls = [
+    `https://chatgpt.com/?prompt_source=ruichao&tpl=${encodeURIComponent(withTplId)}`,
+    `https://chat.openai.com/?prompt_source=ruichao&tpl=${encodeURIComponent(withTplId)}`
+  ];
+  let w = window.open(urls[0], "_blank");
+  if(!w) { alert("浏览器阻止了弹窗，请允许此站点弹窗，或手动打开新对话并直接粘贴（已复制）。"); return; }
+  setTimeout(()=>{ if(w.location === "about:blank"){ try{ w.location.href = urls[1]; }catch(e){} } }, 400);
+}
+
+/* ----------------- 顶部按钮逻辑 ----------------- */
+$("#btnPreview").onclick = ()=>{ setOutput(buildPrompt()); };
+$("#btnCopy").onclick = async ()=>{ const txt = buildPrompt(); if(!txt) return; await copyText(txt); alert("已复制到剪贴板。现在打开新对话并粘贴即可。"); };
+$("#btnOpen").onclick = ()=>{ openChat(getCurrentTpl()?.id||""); };
+$("#btnStart").onclick = async ()=>{ const txt = buildPrompt(); if(!txt) return; await copyText(txt); openChat(getCurrentTpl()?.id||""); };
+$("#btnReset").onclick = ()=>{
+  formBox.querySelectorAll("select").forEach(el=>{ if(el.multiple){ Array.from(el.options).forEach(o=>o.selected=false); } else el.selectedIndex=0; });
+  ["#diseases","#techs","#timeRange","#fmt","#scene","#note"].forEach(sel=>{
+    const el = document.querySelector(sel); if(el){ if(el.multiple){ Array.from(el.options).forEach(o=>o.selected=false); } else el.selectedIndex=0; }
+  });
+  $("#chkG0").checked = false; $("#chkTerms").checked = false; $("#chkQC").checked = false; langSel.value="";
+  $("#fileLocal").value=""; $("#pasteArea").value=""; $("#gdriveLinks").value=""; $("#onedriveLinks").value=""; $("#otherLinks").value=""; fileListBox.innerHTML="";
+  setOutput("");
+};
+$("#btnTheme").onclick = ()=>{ const root = document.documentElement; const isDark = root.getAttribute("data-theme")!=="light"; root.setAttribute("data-theme", isDark? "light":"dark"); };
+
+/* ----------------- PDF 目录（打印视图） ----------------- */
+function renderPrint(){
+  const base = location.href.split("?")[0];
+  const container = $("#printList"); container.innerHTML="";
+  TEMPLATES.forEach(t=>{
+    const c = { diseases:"（未选）", techs:"（未选）", timeRange:"—", fmt:"—", scene:"—", note:"—",
+      qaOrder: t.qa.map((q,i)=>`${i+1}) ${q}`).join(" → "), append:"", lang:"中文", files:[], pasted:"", links:[] };
+    const preview = genericBuild(t, (t.fields||[]).reduce((acc,f)=>{acc[f.id]="";return acc;},{}), c).slice(0, 280).replace(/\n+/g, " ");
+    const link = `${base}?tpl=${encodeURIComponent(t.id)}&autobuild=1`;
+    const b = document.createElement("div"); b.className="print-block";
+    b.innerHTML = `<div class="panel">
+      <b>${t.id} · ${t.name}</b> <span class="label">${t.cat}</span>
+      <div class="muted">推荐模型：${t.model} · 追问顺序：${c.qaOrder}</div>
+      <div class="muted">提示预览：${preview}…</div>
+      <div>专属启动链接：<a href="${link}">${link}</a></div>
+    </div>`;
+    container.appendChild(b);
+  });
+  $("#printView").classList.remove("hidden");
+  window.print();
+  setTimeout(()=>$("#printView").classList.add("hidden"), 800);
+}
+$("#btnPrint").onclick = renderPrint;
+
+/* ----------------- URL 参数：?tpl=ID&autobuild=1 ----------------- */
+(function(){
+  const params = new URLSearchParams(location.search);
+  const id = params.get("tpl");
+  const autobuild = params.get("autobuild");
+  if(id){
+    const t = TEMPLATES.find(x=>x.id===id);
+    if(t){ selectTpl(id); }
+    if(autobuild){
+      setTimeout(()=>{
+        const txt = buildPrompt();
+        setOutput(txt);
+        try{ navigator.clipboard.writeText(txt); }catch(e){}
+        const note = document.createElement("div"); note.className="muted";
+        note.textContent = "已自动生成并尝试复制专属提示。若需启动新对话，请点击上方“启动”。";
+        output.parentElement.appendChild(note);
+      }, 200);
+    }
+  }
+})();
+</script>
+
+<script>
+// === v2.2+ 一键粘贴书签 ===
+(function(){
+  function buildBookmarklet(){
+    const code = `(async()=>{
+  try{
+    const txt = await navigator.clipboard.readText();
+    const q = (sel)=>document.querySelector(sel);
+    function setVal(el,val){
+      const d = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype,'value');
+      if(d && d.set){ d.set.call(el,val); } else { el.value = val; }
+    }
+    function paste(){
+      // ChatGPT 新对话页常见选择器（随版本可能变化）
+      const ta = q('textarea[placeholder*=\"Message\"], textarea[placeholder*=\"Send a message\"], textarea');
+      if(!ta){ alert('未找到输入框，请点击输入框后再试'); return; }
+      ta.focus();
+      setVal(ta, txt);
+      ta.dispatchEvent(new InputEvent('input',{bubbles:true}));
+      setTimeout(()=>{
+        const btn = q('button[data-testid=\"send-button\"], button[aria-label*=\"发送\"], button[aria-label*=\"Send\"], form button[type=\"submit\"]');
+        if(btn){ btn.click(); }
+      }, 60);
+    }
+    paste();
+  }catch(e){
+    alert('未能读取剪贴板：请先在生成页点击“启动（复制+新对话）”，再在 ChatGPT 页面点击此书签。');
+  }
+})()`;
+    return `javascript:` + encodeURIComponent(code);
+  }
+  const bmLink = document.getElementById('bmLink');
+  if(bmLink){
+    bmLink.setAttribute('href', buildBookmarklet());
+  }
+  const bmCopy = document.getElementById('bmCopy');
+  if(bmCopy){
+    bmCopy.onclick = async ()=>{
+      const text = decodeURIComponent((buildBookmarklet()||'').replace(/^javascript:/,''));
+      try{ await navigator.clipboard.writeText(text); alert('已复制书签代码。打开书签管理 → 新建书签 → 将代码粘贴到“URL”栏即可。'); }
+      catch(e){
+        const ta = document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); alert('已复制书签代码。'); }catch(e2){ alert('复制失败，请手动选择文本复制。'); }
+        document.body.removeChild(ta);
+      }
+    };
+  }
+})();
+
+// === v2.2+ 云端链接对话框（离线粘贴） ===
+(function(){
+  const dlg = document.getElementById('dlgCloud');
+  const dlgInput = document.getElementById('dlgInput');
+  const dlgTitle = document.getElementById('dlgTitle');
+  const btnClose = document.getElementById('dlgClose');
+  const btnCancel = document.getElementById('dlgCancel');
+  const btnOk = document.getElementById('dlgOk');
+  const gArea = document.getElementById('gdriveLinks');
+  const oArea = document.getElementById('onedriveLinks');
+
+  function openDlg(type){
+    dlg.style.display='flex';
+    dlgInput.value='';
+    if(type==='g'){ dlgTitle.textContent='从 Google Drive 添加链接'; dlg.dataset.target='g'; }
+    else{ dlgTitle.textContent='从 OneDrive 添加链接'; dlg.dataset.target='o'; }
+    dlgInput.focus();
+  }
+  function closeDlg(){ dlg.style.display='none'; }
+
+  const btnAddG = document.getElementById('btnAddGDrive');
+  const btnAddO = document.getElementById('btnAddOneDrive');
+  if(btnAddG){ btnAddG.onclick = ()=>openDlg('g'); }
+  if(btnAddO){ btnAddO.onclick = ()=>openDlg('o'); }
+  if(btnClose) btnClose.onclick = closeDlg;
+  if(btnCancel) btnCancel.onclick = closeDlg;
+  if(btnOk){
+    btnOk.onclick = ()=>{
+      const lines = (dlgInput.value||'').split(/\\n+/).map(s=>s.trim()).filter(Boolean);
+      if(!lines.length){ closeDlg(); return; }
+      const t = lines.join('\\n');
+      if(dlg.dataset.target==='g'){ gArea.value = (gArea.value? gArea.value+'\\n' : '') + t; }
+      else { oArea.value = (oArea.value? oArea.value+'\\n' : '') + t; }
+      closeDlg();
+    };
+  }
+
+  // 可选：将这些引用附加到提示词输出中（在 window.buildPrompt 存在时包裹）
+  const attach = document.getElementById('chkAttachRefs');
+  const localFiles = document.getElementById('localFiles');
+  const pastedText = document.getElementById('pastedText');
+  function collectRefs(){
+    const files = localFiles && localFiles.files ? Array.from(localFiles.files).map(f=>f.name) : [];
+    const g = (gArea.value||'').split(/\\n+/).map(s=>s.trim()).filter(Boolean);
+    const o = (oArea.value||'').split(/\\n+/).map(s=>s.trim()).filter(Boolean);
+    const u = (document.getElementById('otherLinks').value||'').split(/\\n+/).map(s=>s.trim()).filter(Boolean);
+    const txt = (pastedText.value||'').trim();
+    const has = files.length||g.length||o.length||u.length||txt;
+    if(!has) return '';
+    let out = '\\n【引用资料（可选）】';
+    if(files.length) out += `\\n- 本地文件（名称）：${files.join('；')}`;
+    if(g.length) out += `\\n- Google Drive：\\n  - ${g.join('\\n  - ')}`;
+    if(o.length) out += `\\n- OneDrive/SharePoint：\\n  - ${o.join('\\n  - ')}`;
+    if(u.length) out += `\\n- 其他链接：\\n  - ${u.join('\\n  - ')}`;
+    if(txt) out += `\\n- 粘贴文本节选（前200字）：${txt.slice(0,200)}…`;
+    out += '\\n（提示：确保网盘权限为 “Anyone with the link can view”。）';
+    return out;
+  }
+
+  // 包裹原 buildPrompt（若存在）
+  if(window.buildPrompt){
+    const _orig = window.buildPrompt;
+    window.buildPrompt = function(){
+      const base = _orig.apply(this, arguments);
+      if(document.getElementById('chkAttachRefs')?.checked){
+        return base + collectRefs();
+      }
+      return base;
+    };
+  }
+})();
+
+
+/* ===== 一键粘贴书签：生成与测试 ===== */
+(function(){
+  function buildBookmarkletCode(){
+    // This bookmarklet reads text from clipboard (fallback to prompt), then inserts into ChatGPT input and tries to send.
+    var code = `(function(){try{var put=function(el,text){try{var setter=Object.getOwnPropertyDescriptor(el.__proto__,'value')?.set||Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')?.set;setter&&setter.call(el,text);}catch(e){el.value=text}el.dispatchEvent(new Event('input',{bubbles:true}));};var go=function(t){if(!t){t=prompt('粘贴提示词到此：')||'';}if(!t){alert('无可粘贴内容');return;}var box=document.querySelector('textarea,div[contenteditable=\"true\"]');if(!box){alert('未找到输入框');return;}if(box.tagName==='TEXTAREA'){put(box,t);}else{box.focus();document.execCommand('insertText',false,t);}var btn=[...document.querySelectorAll('button')].find(b=>/发送|Send|提交|Submit/i.test(b.textContent));btn&&btn.click&&btn.click();};if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(function(c){go(c||'')}).catch(function(){go('')});}else{go('');}}catch(e){console.error(e);alert('书签运行失败：'+e.message)}})();`;
+    return "javascript:" + encodeURIComponent(code);
+  }
+  function installBookmarklet(){
+    var a = document.getElementById('bookmarkletLink');
+    var href = buildBookmarkletCode();
+    a.href = href;
+    a.title = "拖拽到书签栏：Ruichao 一键粘贴";
+    a.textContent = "📌 拖到书签栏安装（Ruichao 一键粘贴）";
+  }
+  function copyBM(){
+    var href = decodeURIComponent(document.getElementById('bookmarkletLink').href.replace(/^javascript:/,''));
+    navigator.clipboard.writeText('javascript:'+href).then(()=>alert('已复制 Bookmarklet 脚本')).catch(()=>{
+      const ta=document.createElement('textarea');ta.value='javascript:'+href;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('已复制（备用方式）');
+    })
+  }
+  function testBM(){
+    // On this page, paste output text into a temporary textarea to simulate
+    var text = (document.getElementById('output')||{}).textContent||'';
+    if(!text){alert('请先生成提示词');return;}
+    // Try to copy to clipboard and read back to simulate bookmarklet behavior
+    navigator.clipboard.writeText(text).then(()=>alert('已复制到剪贴板。切换到 ChatGPT 页面，点击书签即可自动粘贴。')).catch(()=>alert('浏览器未授权访问剪贴板，请先在地址栏授予权限。'));
+  }
+  window.addEventListener('DOMContentLoaded', function(){
+    if(document.getElementById('bookmarkletLink')){
+      installBookmarklet();
+      document.getElementById('btnCopyBM').onclick = copyBM;
+      document.getElementById('btnTestBM').onclick = testBM;
+      var protoEl = document.getElementById('protoHint'); if(protoEl){protoEl.textContent = location.protocol;}
+    }
+  });
+})();
+
+
+/* ===== 云端选择通道（Google Drive / OneDrive） ===== */
+(function(){
+  // Local storage helpers
+  const LS_KEYS = {
+    gApiKey: 'ruichao_gapi_key',
+    gClientId: 'ruichao_gclient_id',
+    odClientId: 'ruichao_od_client_id',
+    odTenant: 'ruichao_od_tenant'
+  };
+  function saveCreds(){
+    const gk = document.getElementById('gApiKey')?.value||'';
+    const gid = document.getElementById('gClientId')?.value||'';
+    const ok = document.getElementById('odClientId')?.value||'';
+    const ot = document.getElementById('odTenant')?.value||'';
+    if(gk) localStorage.setItem(LS_KEYS.gApiKey, gk); else localStorage.removeItem(LS_KEYS.gApiKey);
+    if(gid) localStorage.setItem(LS_KEYS.gClientId, gid); else localStorage.removeItem(LS_KEYS.gClientId);
+    if(ok) localStorage.setItem(LS_KEYS.odClientId, ok); else localStorage.removeItem(LS_KEYS.odClientId);
+    if(ot) localStorage.setItem(LS_KEYS.odTenant, ot); else localStorage.removeItem(LS_KEYS.odTenant);
+  }
+  function loadCreds(){
+    const set = (id,v)=>{const el=document.getElementById(id); if(el&&v) el.value=v;};
+    set('gApiKey', localStorage.getItem(LS_KEYS.gApiKey)||'');
+    set('gClientId', localStorage.getItem(LS_KEYS.gClientId)||'');
+    set('odClientId', localStorage.getItem(LS_KEYS.odClientId)||'');
+    set('odTenant', localStorage.getItem(LS_KEYS.odTenant)||'');
+  }
+  function ensureAreas(){
+    if(!document.getElementById('gdriveLinks')){
+      // If page schema changed, create fallback textareas
+      const up = document.getElementById('uploadPanel'); if(!up) return;
+      const box = document.createElement('div');
+      box.className='panel';
+      box.innerHTML = '<div class="kv"><label>Google Drive 链接（每行一条）</label><textarea id="gdriveLinks"></textarea></div>'+
+                      '<div class="kv"><label>OneDrive 链接（每行一条）</label><textarea id="onedriveLinks"></textarea></div>';
+      up.appendChild(box);
+    }
+  }
+  // Toggle config
+  function toggleCfg(){
+    const el = document.getElementById('cloudCfg'); if(!el) return;
+    el.classList.toggle('hidden');
+    if(!el.classList.contains('hidden')) loadCreds();
+  }
+  // Google Picker
+  let gPickerInited = false;
+  function loadGoogleApis(cb){
+    if(window.gapi){cb(); return;}
+    const s = document.createElement('script');
+    s.src = 'https://apis.google.com/js/api.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+  function launchGDrive(){
+    const gApiKey = localStorage.getItem(LS_KEYS.gApiKey)||document.getElementById('gApiKey')?.value||'';
+    const gClientId = localStorage.getItem(LS_KEYS.gClientId)||document.getElementById('gClientId')?.value||'';
+    if(!gApiKey || !gClientId){ alert('请先在“设置 API/权限”中填写 Google API Key 与 OAuth Client ID'); return; }
+    saveCreds();
+    loadGoogleApis(function(){
+      gapi.load('client:picker', async function(){
+        try{
+          await gapi.client.init({apiKey: gApiKey, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]});
+          const token = await gapi.auth2.init({client_id: gClientId, scope: 'https://www.googleapis.com/auth/drive.readonly'}).then(ai=>ai.signIn()).then(ga=>ga.getAuthResponse().access_token);
+          const view = new google.picker.DocsView(google.picker.ViewId.DOCS).setIncludeFolders(true).setSelectFolderEnabled(true);
+          const picker = new google.picker.PickerBuilder()
+            .setAppId(gClientId.split('-')[0])
+            .setOAuthToken(token)
+            .setDeveloperKey(gApiKey)
+            .addView(view)
+            .setLocale('zh-CN')
+            .setCallback(function(data){
+              if(data.action==='picked' && data.docs && data.docs.length){
+                ensureAreas();
+                const ta = document.getElementById('gdriveLinks');
+                data.docs.forEach(d=>{
+                  // Construct a share/view link using file ID
+                  const id = d.id;
+                  const url = 'https://drive.google.com/file/d/'+id+'/view?usp=drive_link';
+                  ta.value += (ta.value? '\\n' : '') + url;
+                });
+                alert('已添加 '+data.docs.length+' 个 Google Drive 链接到输入框。请确保这些文件的共享权限为“拥有链接的任何人可查看”。');
+              }
+            })
+            .build();
+          picker.setVisible(true);
+        }catch(e){
+          console.error(e); alert('Google Drive 选择器启动失败：'+ e.message);
+        }
+      });
+    });
+  }
+  // OneDrive Picker
+  function loadOneDrive(cb){
+    if(window.OneDrive){cb();return;}
+    const s = document.createElement('script'); s.src='https://js.live.net/v7.2/OneDrive.js'; s.onload=cb; document.head.appendChild(s);
+  }
+  function launchOneDrive(){
+    const cid = localStorage.getItem(LS_KEYS.odClientId)||document.getElementById('odClientId')?.value||'';
+    const tenant = localStorage.getItem(LS_KEYS.odTenant)||document.getElementById('odTenant')?.value||'common';
+    if(!cid){ alert('请先在“设置 API/权限”中填写 OneDrive Client ID'); return; }
+    saveCreds();
+    loadOneDrive(function(){
+      const odOptions = {
+        clientId: cid,
+        action: 'share',
+        multiSelect: true,
+        advanced: {
+          filter: 'folder,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.csv,.txt,.md,.png,.jpg,.jpeg,.tif,.tiff,.nii,.nii.gz',
+          redirectUri: (location.origin.startsWith('http')? location.origin + location.pathname : 'https://onedrive.live.com/about/zh-cn/'), // fallback
+          accessToken: null // implicit flow via SDK
+        },
+        success: function(files){
+          ensureAreas();
+          const ta = document.getElementById('onedriveLinks');
+          (files.value||[]).forEach(f=>{
+            const url = (f['@microsoft.graph.downloadUrl'] || f.webUrl || f.link?.shareUrl || f.link?.webUrl);
+            if(url){
+              ta.value += (ta.value? '\\n' : '') + url;
+            }
+          });
+          alert('已添加 OneDrive 链接，请确保共享权限为“拥有链接的任何人可查看”。');
+        },
+        cancel: function(){ /* no-op */ },
+        error: function(e){ alert('OneDrive 选择器错误：'+ (e && e.message || e)); }
+      };
+      try{ OneDrive.open(odOptions); }catch(e){ console.error(e); alert('OneDrive 选择器启动失败：'+e.message); }
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', function(){
+    const btnCfg = document.getElementById('btnCloudCfg');
+    if(btnCfg){ btnCfg.onclick = toggleCfg; }
+    const b1 = document.getElementById('btnGDrive'); if(b1) b1.onclick = launchGDrive;
+    const b2 = document.getElementById('btnOneDrive'); if(b2) b2.onclick = launchOneDrive;
+  });
+})();
+
+</script>
+
+</body>
+</html>

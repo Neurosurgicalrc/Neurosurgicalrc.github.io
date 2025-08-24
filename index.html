@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>华西神外 · 梁锐超课题组 — 交互指令手册 v2.2 · 跳转中…</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei';background:#0b1220;color:#e5e7eb;display:flex;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  a{color:#93c5fd}
+  .muted{color:#94a3b8;font-size:12px}
+  .btn{padding:10px 14px;border:1px solid #334155;border-radius:10px;background:#0f172a;color:#e5e7eb;text-decoration:none}
+</style>
+<script>
+(function(){
+  try {
+    const params = new URLSearchParams(location.search);
+    const force = params.get("view"); // ?view=mobile 或 ?view=desktop
+    const go = (p) => location.replace(p + location.search + location.hash);
+
+    if (force === "mobile") return go("mobile.html");
+    if (force === "desktop") return go("desktop.html");
+
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isSmallScreen = window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
+    const touch = (navigator.maxTouchPoints||0) > 0 || ('ontouchstart' in window);
+    const uaDataMobile = navigator.userAgentData && navigator.userAgentData.mobile ? true : false;
+
+    const isMobile = !!(uaDataMobile || isMobileUA || (isSmallScreen && touch));
+
+    if (isMobile) go("mobile.html");
+    else go("desktop.html");
+  } catch(e) {
+    // 兜底：若脚本异常，默认转到桌面版
+    location.replace("desktop.html");
+  }
+})();
+</script>
+<noscript>
+  <meta http-equiv="refresh" content="0; url=desktop.html">
+</noscript>
+</head>
+<body>
+  <div>正在根据设备类型跳转…</div>
+  <div class="muted">若未跳转：
+    <a class="btn" href="mobile.html">进入移动版</a>
+    <a class="btn" href="desktop.html">进入桌面版</a>
+  </div>
+  <div class="muted">手动覆盖：<code>?view=mobile</code> / <code>?view=desktop</code></div>
+</body>
+</html>
